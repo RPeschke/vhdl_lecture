@@ -24,8 +24,8 @@ begin
 process(clk)
 begin
     if rising_edge(clk) then
-        data_out <= data_in - buff;
-        buff <= data_in;
+        data_out <= data_in - buff + 100;
+        buff <= data_in ;
     end if;
 end process;
 
