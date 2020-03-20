@@ -1,6 +1,21 @@
 # IDLAB VHDL Lecture
 
 
+## Installing Python
+
+In order to run the python scripts you need to have python3 installed.
+
+requirements:
+
+- python3
+- pip3
+- pandas
+
+If you are using windows/wsl you need to have these packages installed on both (windows/wsl).
+
+On windows make sure python and pip is in the path.
+
+
 ## Installation  ISE
 
 ### cloning
