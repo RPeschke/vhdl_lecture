@@ -10,6 +10,18 @@ requirements:
 - python3
 - pip3
 - pandas
+- xlrd
+
+```bash
+# PC BASH
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install python3
+sudo apt-get install python3-pip
+pip3 install pandas
+pip3 install xlrd
+
+```
 
 If you are using windows/wsl you need to have these packages installed on both (windows/wsl).
 
