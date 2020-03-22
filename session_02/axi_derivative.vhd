@@ -15,13 +15,13 @@ entity axi_derivative is
         --- Data In
         data_in_valid : in  std_logic;
         data_in_ready : out std_logic;
-        data_in_data  : in  std_logic;
+        data_in_data  : in  std_logic_vector(15 downto 0);
 
 
         -- Data Out 
         data_out_valid : out std_logic;
         data_out_ready : in  std_logic;
-        data_out_data  : out std_logic
+        data_out_data  : out std_logic_vector(15 downto 0)
 
     );
 end entity axi_derivative;
