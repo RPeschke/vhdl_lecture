@@ -272,4 +272,11 @@ If Valid is High And ready is High the slave has received the data and the Maste
 
 On the slave Side if valid and ready is high the slave has to use the data. At this time there is no way of not using this data right now. If the slave cannot use the data the two entities will get out of sync and the package is lost. That means at the time the  slave raises the ready signal it must be able to receive the data. 
 
+### Task
+
+In the folder "session_02" is a template of an entity which uses the axi stream interface. 
+
+- Build a test bench for the "axi_derivative"  entity
+- Modify the process block of axi_derivative to make the derivative of the input stream
+- Simulate the entity 
 
