@@ -1,3 +1,14 @@
+
+
+library IEEE;
+library UNISIM;
+library work;
+use IEEE.numeric_std.all;
+use IEEE.std_logic_1164.all;
+use UNISIM.VComponents.all;
+use ieee.std_logic_unsigned.all;
+
+
 entity axi_derivative is
     port (
         clk : std_logic;
@@ -10,7 +21,7 @@ entity axi_derivative is
         -- Data Out 
         data_out_valid : out std_logic;
         data_out_ready : in  std_logic;
-        data_out_data  : out std_logic;
+        data_out_data  : out std_logic
 
     );
 end entity axi_derivative;
