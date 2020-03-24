@@ -44,16 +44,23 @@ begin
     proc1: process(clk)
      variable data_in : axisStream_32_slave := axisStream_32_slave_null; 
       variable dataBuffer :   std_logic_vector(31 downto 0) := (others => '0');
-
+      variable lastData :   std_logic_vector(31 downto 0) := (others => '0');
+      variable data_offset :   std_logic_vector(31 downto 0) := x"00000010";
+      variable counter : integer  := 0;
       variable data_out : axisStream_32_master := axisStream_32_master_null;
 
     begin
         if rising_edge(clk) then
             pull(data_in , data_in_m2s);
             pull(data_out , data_out_s2m);
-            if isReceivingData(data_in) and ready_to_send(data_out) then
+            counter := counter +1;
+            if isReceivingData(data_in) and counter = 1  then
                 read_data(data_in, dataBuffer);
-                send_data(data_out , dataBuffer);
+            end if;
+            if ready_to_send(data_out)  and counter > 5 then
+                counter := 0;
+                send_data(data_out , dataBuffer - lastData);
+                lastData := dataBuffer;
             end if;
             push(data_out, data_out_m2s);
             push(data_in, data_in_s2m);
