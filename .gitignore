@@ -169,3 +169,4 @@ _xmsgs/
 !*.xmp
 
 # End of https://www.gitignore.io/api/xilinxvivado
+/currentFolder.txt

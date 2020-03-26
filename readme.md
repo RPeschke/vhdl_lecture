@@ -317,3 +317,4 @@ open the file in ISE. and then click on generate bitfile
 
 The Bit file sould be generated without errors. 
 
+![Make Bit file](doc/KLM_Testbench.png)
