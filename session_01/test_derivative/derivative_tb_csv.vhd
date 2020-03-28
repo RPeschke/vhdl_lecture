@@ -24,7 +24,7 @@ end entity;
 
 architecture Behavioral of derivative_reader_et is 
 
-  constant  NUM_COL    : integer := 1;
+  constant  NUM_COL    : integer := 5;
   signal    csv_r_data : c_integer_array(NUM_COL -1 downto 0)  := (others=>0)  ;
 begin
 
@@ -39,7 +39,11 @@ begin
         Rows => csv_r_data
     );
 
-  integer_to_slv(csv_r_data(0), data.data_in);
+  integer_to_sl(csv_r_data(0), data.globals.clk);
+  integer_to_sl(csv_r_data(1), data.globals.rst);
+  integer_to_slv(csv_r_data(2), data.globals.reg.address);
+  integer_to_slv(csv_r_data(3), data.globals.reg.value);
+  integer_to_slv(csv_r_data(4), data.data_in);
 
 
 end Behavioral;
@@ -67,14 +71,14 @@ entity derivative_writer_et  is
 end entity;
 
 architecture Behavioral of derivative_writer_et is 
-  constant  NUM_COL : integer := 2;
+  constant  NUM_COL : integer := 6;
   signal data_int   : c_integer_array(NUM_COL - 1 downto 0)  := (others=>0);
 begin
 
     csv_w : entity  work.csv_write_file 
         generic map (
             FileName => FileName,
-            HeaderLines=> "data_in; data_out",
+            HeaderLines=> "globals_clk; globals_rst; globals_reg_address; globals_reg_value; data_in; data_out",
             NUM_COL =>   NUM_COL 
         ) port map(
             clk => clk, 
@@ -82,8 +86,12 @@ begin
         );
 
 
-  slv_to_integer(data.data_in, data_int(0) );
-  slv_to_integer(data.data_out, data_int(1) );
+  sl_to_integer(data.globals.clk, data_int(0) );
+  sl_to_integer(data.globals.rst, data_int(1) );
+  slv_to_integer(data.globals.reg.address, data_int(2) );
+  slv_to_integer(data.globals.reg.value, data_int(3) );
+  slv_to_integer(data.data_in, data_int(4) );
+  slv_to_integer(data.data_out, data_int(5) );
 
 
 end Behavioral;
@@ -126,12 +134,14 @@ begin
     );
   
 
-data_out.data_in <= data_in.data_in;
+  data_out.globals.clk <=clk;
+  data_out.globals.reg <= data_in.globals.reg;
+  data_out.globals.rst <= data_in.globals.rst;
+  data_out.data_in <= data_in.data_in;
 
 
 DUT :  entity work.derivative  port map(
-
-  clk => clk,
+globals => data_out.globals,
   data_in => data_out.data_in,
   data_out => data_out.data_out
     );

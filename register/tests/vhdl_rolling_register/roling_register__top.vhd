@@ -1,4 +1,4 @@
--- <header>Header; Nr_of_streams; recording TimeStamp; Operation; Number of packets; packateNr; Sending TimeStamp; globals_clk; globals_rst; globals_reg_address; globals_reg_value; data_in; data_out; Tail</header>
+-- <header>Header; Nr_of_streams; recording TimeStamp; Operation; Number of packets; packateNr; Sending TimeStamp; registerin_m2s_valid; registerin_m2s_last; registerin_m2s_data_address; registerin_m2s_data_value; registerin_s2m_ready; globals_clk; globals_rst; globals_reg_address; globals_reg_value; Tail</header>
 
 
 
@@ -10,13 +10,13 @@ library UNISIM;
   use UNISIM.VComponents.all;
   use work.UtilityPkg.all;
 
-  use work.derivative_IO_pgk.all;
+  use work.roling_register_IO_pgk.all;
   use work.type_conversions_pgk.all;
   use work.Imp_test_bench_pgk.all;
   use work.xgen_klm_scrod_bus.all;
   use work.klm_scint_globals.all;
 
-entity derivative_eth is
+entity roling_register_eth is
   port (
     globals :  in globals_t := globals_t_null;
     
@@ -34,7 +34,7 @@ entity derivative_eth is
   );
 end entity;
 
-architecture rtl of derivative_eth is
+architecture rtl of roling_register_eth is
   
   constant Throttel_max_counter : integer  := 10;
   constant Throttel_wait_time : integer := 100000;
@@ -49,17 +49,17 @@ architecture rtl of derivative_eth is
   signal  i_TxDataReadys   :  sl := '0';
 
   constant FIFO_DEPTH : integer := 10;
-  constant COLNum : integer := 5;
+  constant COLNum : integer := 4;
   signal i_data :  Word32Array(COLNum -1 downto 0) := (others => (others => '0'));
   signal i_controls_out    : Imp_test_bench_reader_Control_t  := Imp_test_bench_reader_Control_t_null;
   signal i_valid      : sl := '0';
    
-  constant COLNum_out : integer := 6;
+  constant COLNum_out : integer := 9;
   signal i_data_out :  Word32Array(COLNum_out -1 downto 0) := (others => (others => '0'));
    
 
-  signal data_in  : derivative_reader_rec := derivative_reader_rec_null;
-  signal data_out : derivative_writer_rec := derivative_writer_rec_null;
+  signal data_in  : roling_register_reader_rec := roling_register_reader_rec_null;
+  signal data_out : roling_register_writer_rec := roling_register_writer_rec_null;
   
 begin
   
@@ -116,39 +116,40 @@ throttel : entity work.axiStreamThrottle
         txDataReady     =>  TxDataReady
     );
 -- <DUT>
-    DUT :  entity work.derivative port map(
+    DUT :  entity work.roling_register port map(
   globals => globals,
-  data_in => data_out.data_in,
-  data_out => data_out.data_out
+  registerin_m2s => data_out.registerin_m2s,
+  registerin_s2m => data_out.registerin_s2m
 );
 -- </DUT>
 
 
 --  <data_out_converter>
 
-sl_to_slv(data_out.globals.clk, i_data_out(0) );
-sl_to_slv(data_out.globals.rst, i_data_out(1) );
-slv_to_slv(data_out.globals.reg.address, i_data_out(2) );
-slv_to_slv(data_out.globals.reg.value, i_data_out(3) );
-slv_to_slv(data_out.data_in, i_data_out(4) );
-slv_to_slv(data_out.data_out, i_data_out(5) );
+sl_to_slv(data_out.registerin_m2s.valid, i_data_out(0) );
+sl_to_slv(data_out.registerin_m2s.last, i_data_out(1) );
+slv_to_slv(data_out.registerin_m2s.data.address, i_data_out(2) );
+slv_to_slv(data_out.registerin_m2s.data.value, i_data_out(3) );
+sl_to_slv(data_out.registerin_s2m.ready, i_data_out(4) );
+sl_to_slv(data_out.globals.clk, i_data_out(5) );
+sl_to_slv(data_out.globals.rst, i_data_out(6) );
+slv_to_slv(data_out.globals.reg.address, i_data_out(7) );
+slv_to_slv(data_out.globals.reg.value, i_data_out(8) );
 
 --  </data_out_converter>
 
 -- <data_in_converter> 
 
-slv_to_sl(i_data(0), data_in.globals.clk);
-slv_to_sl(i_data(1), data_in.globals.rst);
-slv_to_slv(i_data(2), data_in.globals.reg.address);
-slv_to_slv(i_data(3), data_in.globals.reg.value);
-slv_to_slv(i_data(4), data_in.data_in);
+slv_to_sl(i_data(0), data_in.registerin_m2s.valid);
+slv_to_sl(i_data(1), data_in.registerin_m2s.last);
+slv_to_slv(i_data(2), data_in.registerin_m2s.data.address);
+slv_to_slv(i_data(3), data_in.registerin_m2s.data.value);
 
 --</data_in_converter>
 
 -- <connect_input_output>
 
-data_out.globals <= data_in.globals;
-data_out.data_in <= data_in.data_in;
+data_out.registerin_m2s <= data_in.registerin_m2s;
 
 -- </connect_input_output>
 
@@ -180,7 +181,7 @@ library UNISIM;
   use work.tdc_pkg.all;
 
   
-entity derivative_top is
+entity roling_register_top is
    port (
     -- Direct GT connections
     gtTxP        : out sl;
@@ -249,7 +250,7 @@ entity derivative_top is
   );
 end entity;
 
-architecture rtl of derivative_top is
+architecture rtl of roling_register_top is
 
   signal TXBus_m2s : DataBus_m2s_a(1 downto 0) := (others => DataBus_m2s_null);
   signal TXBus_s2m : DataBus_s2m_a(1 downto 0) := (others => DataBus_s2m_null);
@@ -415,7 +416,7 @@ begin
   
   
   
-  u_dut  : entity work.derivative_eth
+  u_dut  : entity work.roling_register_eth
     port map (
       globals => globals,
       -- Incoming data
