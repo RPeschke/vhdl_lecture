@@ -15,7 +15,7 @@ package xgen_ramHandler_32_10 is
 
 
   constant addressSize: natural := 8;
-  constant dataSize  : natural := 16;
+  constant dataSize  : natural := 32;
   constant fifoDept  : natural := 4;
 
   type ram_handle_m2s is record 
@@ -127,13 +127,14 @@ package xgen_ramHandler_32_10 is
 
   procedure push ( self : inout ram_handle_master;  signal txrx :  out  ram_handle_m2s);
   procedure pull ( self : inout ram_handle_master;  signal txrx :  in  ram_handle_s2m);
-  
+
   function Nr_of_free_Slots(self: ram_handle_master) return integer;
   function isReady2Store (  self : ram_handle_master) return boolean;
   procedure Store_Data (self : inout ram_handle_master; Address :  in  std_logic_vector; Data :  in  std_logic_vector);
   procedure request_Data (self : inout ram_handle_master; Address :  in  std_logic_vector);
   function isReady2Load (  self : ram_handle_master; Address :   std_logic_vector) return boolean;
   procedure read_Data (self : inout ram_handle_master; Address :  in  std_logic_vector; Data :  out  std_logic_vector);
+  procedure reset(self : inout ram_handle_master);
   ------- End Psuedo Class ram_handle_master -------------------------
   -------------------------------------------------------------------------
 
@@ -302,11 +303,11 @@ package body xgen_ramHandler_32_10 is
     pull( self.txrx, txrx);
 
     -- End Connecting
-    
+
     for i in 1 to self.read_process_fifo'length - 1 loop
       self.read_process_fifo(self.read_process_fifo'length - i)  := self.read_process_fifo(self.read_process_fifo'length - 1 -i);
     end loop;
-    
+
     self.read_process_fifo(0).requesting_data := '0';
     self.read_process_fifo(2).Data := self.txrx.readData;
 
@@ -319,28 +320,28 @@ package body xgen_ramHandler_32_10 is
     end if;
 
 
-   
-    
+
+
 
 
     self.writeEnable_internal := '0';
   end procedure;
-  
+
   function Nr_of_free_Slots(self: ram_handle_master) return integer is 
     variable ret : integer := self.read_data_fifo'length;
   begin 
-     for i in 0 to self.read_data_fifo'length - 1 loop
-        if self.read_data_fifo(i).requesting_data = '1' and  self.read_data_fifo(i).Data_was_read  ='0'  then 
-          ret := self.read_data_fifo'length - i;
-          return ret;
-        end if;
-        
-        if self.read_data_fifo(i).requesting_data = '1' and  self.read_data_fifo(i).Data_was_read  ='1'  then 
-          ret := self.read_data_fifo'length;
-          return ret;
-        end if;
-      end loop;
-      return ret;
+    for i in 0 to self.read_data_fifo'length - 1 loop
+      if self.read_data_fifo(i).requesting_data = '1' and  self.read_data_fifo(i).Data_was_read  ='0'  then 
+        ret := self.read_data_fifo'length - i;
+        return ret;
+      end if;
+
+      if self.read_data_fifo(i).requesting_data = '1' and  self.read_data_fifo(i).Data_was_read  ='1'  then 
+        ret := self.read_data_fifo'length;
+        return ret;
+      end if;
+    end loop;
+    return ret;
   end function;
 
   function isReady2Store (  self : ram_handle_master) return boolean is
@@ -415,7 +416,12 @@ package body xgen_ramHandler_32_10 is
 
 
   end procedure;
-
+  procedure reset(self : inout ram_handle_master) is
+  begin
+    self.read_data_fifo :=  (others => ram_handler_fifo_null);
+    self.read_process_fifo :=  (others => ram_handler_fifo_null);
+    
+  end procedure;
   ------- End Psuedo Class ram_handle_master -------------------------
   -------------------------------------------------------------------------
 
