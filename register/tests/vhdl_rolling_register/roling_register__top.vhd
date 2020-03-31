@@ -202,9 +202,9 @@ entity roling_register_top is
     PCLK         : out std_logic_vector(9 downto 0) := (others =>'0');
  
     BUSA_CLR            : out sl := '0';
-    BUSA_RAMP           :out sl := '0';
-    BUSA_WR_ADDRCLR     :out sl := '0'; 
-    BUSA_DO             : in std_logic_vector(15 downto 0) := (others =>'0');
+    BUSA_RAMP           : out sl := '0';
+    BUSA_WR_ADDRCLR     : out sl := '0'; 
+    BUSA_DO             : in  std_logic_vector(15 downto 0) := (others =>'0');
     BUSA_RD_COLSEL_S    : out std_logic_vector(5 downto 0) := (others =>'0');
     BUSA_RD_ENA         : out sl := '0';
     BUSA_RD_ROWSEL_S    : out std_logic_vector(2 downto 0) := (others =>'0');

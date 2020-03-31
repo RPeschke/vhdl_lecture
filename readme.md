@@ -318,3 +318,30 @@ open the file in ISE. and then click on generate bitfile
 The Bit file sould be generated without errors. 
 
 ![Make Bit file](doc/KLM_Testbench.png)
+
+## Session 06: State Machine 
+
+In this example the working of a state machine is demonstrated. The scenario for this excersice is an wave form sampling ASIC for which we want to write an entity that does feature extraction. 
+
+First of all what do we mean by feature extraction and why is that useful? Lets asume that we have an ASIC which can readout the waveform of an Photo Mulitplier (PMT) which is connected to a szintilatior bar. For our experiment only very few features of this waveform are actually intressting. 
+
+- Signal High 
+- Time over Threshold (ToT)
+- Cummulative Signal Hight
+- Timing Rising edge 
+- Timing Faling edge
+- Timing Peak 
+
+
+By reducing the waveform to only two pices of information it allows to readout the detector at a much higher speed than without this. 
+
+For this session the goal is to create an entity which does the feature extraction and packaging of the data. 
+
+The input data will be one data input stream and one trigger input stream. The output of the entity is one data stream which contains a header which contains information such as run number, trigger number and asic number and a body which contains a list of all peaks (timing/Hight) that happend within a certain time after the trigger. 
+
+![Features Extraction](doc/Feature_extraction.png)
+
+
+The next picture shows a simple abstraction of the State Machine which handles the feature extraction and packaging
+
+![Features Extraction](doc/StateMachine.png)
