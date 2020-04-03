@@ -69,6 +69,9 @@ package xgen_Counter is
   function InTimeWindowSLV (  self : counter_16; TimeMin :   std_logic_vector; TimeMax :   std_logic_vector; DataIn :   std_logic_vector) return std_logic_vector;
   function InTimeWindowSl (  self : counter_16; TimeMin :   std_logic_vector; TimeMax :   std_logic_vector) return std_logic;
   function InTimeWindowSLV_r (  self : counter_16; TimeSpan : time_span16; DataIn :   std_logic_vector) return std_logic_vector;
+  
+  function InTimeWindowSLV_r_a (  self : counter_16; TimeSpan : time_span16_a; DataIn :   std_logic_vector) return std_logic_vector;
+  
   function InTimeWindowSl_r (  self : counter_16; TimeSpan : time_span16) return std_logic;
   ------- End Psuedo Class counter_16 -------------------------
   -------------------------------------------------------------------------
@@ -215,7 +218,20 @@ package body xgen_Counter is
     return DataOut;
 
   end function;
-
+  
+  function InTimeWindowSLV_r_a (  self : counter_16; TimeSpan : time_span16_a; DataIn :   std_logic_vector) return std_logic_vector  is
+    variable DataOut : std_logic_vector(DataIn'length -1 downto 0) := (others => '0'); 
+  begin 
+    DataOut :=  (others => '0');
+    for i1 in 0 to TimeSpan'length -1 loop 
+     if  InTimeWindowSl_r(self, TimeSpan(i1)) = '1' then 
+       DataOut := DataIn;
+       return DataOut;
+     end if;
+    end loop;
+    return DataOut;
+  end function;
+  
   function InTimeWindowSl_r (  self : counter_16; TimeSpan : time_span16) return std_logic is
     variable DataOut : std_logic := '0'; 
 
