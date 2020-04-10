@@ -30,7 +30,7 @@
 ![Slide_1](pictures/Slide27.PNG)
 ![Slide_1](pictures/Slide28.PNG)
 ![Slide_1](pictures/Slide29.PNG)
-![Slide_1](pictures/Slide30.PNG)
+![Slide_1](pictures/plotly.gif)
 ![Slide_1](pictures/Slide31.PNG)
-![Slide_1](pictures/Slide32.PNG)
+![Slide_1](pictures/coding.gif)
 
