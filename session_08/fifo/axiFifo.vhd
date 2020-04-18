@@ -29,9 +29,9 @@ architecture rtl of axiFifo is
 --------------------------axiFifo-----------------
   constant array_size : integer := 1024; 
   constant depth : integer := 10; 
-  signal tail_index : std_logic_vector(10 downto 0) := (others => '0'); 
-  signal sList : slv32_a(array_size - 1 downto 0)  := (others => (others => '0'));
   signal head_index : std_logic_vector(10 downto 0) := (others => '0'); 
+  signal sList : slv32_a(array_size - 1 downto 0)  := (others => (others => '0'));
+  signal tail_index : std_logic_vector(10 downto 0) := (others => '0'); 
 -------------------------- end axiFifo-----------------
 
 begin
