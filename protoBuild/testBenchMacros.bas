@@ -194,7 +194,11 @@ Close #1
 
 FullName = Application.ActiveWorkbook.FullName
 w_path = Worksheets("Setup").Range("w_path").Value
-shell_Command = "python " & w_path & "\vhdl_build_system\bin_merge_test_case_to_one_file.py --InputTestCase " & vFile & "  --ExcelFile " & FullName
+
+
+Dim shell_Command As String
+shell_Command = "python " & w_path & "\vhdl_build_system\bin_merge_test_case_to_one_file.py --InputTestCase " & vFile & "  --ExcelFile " & FullName & " > " & w_path & "\test.txt"
+
 'shell_Command = "echo ""python " & w_path & "\bin_merge_test_case_to_one_file.py --InputTestCase "" > test.txt"
 Shell Environ$("comspec") & " /c " & shell_Command, 0
 
@@ -749,4 +753,6 @@ Sub read_commandlineOutput()
       End If
         
 End Sub
+
+
 
