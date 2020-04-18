@@ -52,7 +52,7 @@ In general we cannot assume that the ram object is ready to receive data nor tha
 
 ## Session 09 Test-Driven Development
 
-![TDD](doc_TDD/Test_Driven_Development/Slide1.png)
+![TDD](doc_TDD//Slide1.png)
 
 Test-driven development describes a set of tools/techniques to ensure the correctness of a program over its lifetime. Large Programs that exist for a long time are usually to complex for one programmer to know all the parts. Even if the program was only written by one person. Futur me and past me are not the same person. This means that in order to maintain the correctness of the program, programmers need a way to quantify correctness in some way. 
 
@@ -105,17 +105,17 @@ In modern programming, each new feature starts with a new test-case.
 
 
 
-![TDD](doc_TDD/Test_Driven_Development/Slide2.png)
+![TDD](doc_TDD//Slide2.png)
 
 
-![TDD](doc_TDD/Test_Driven_Development/Slide3.png)
+![TDD](doc_TDD//Slide3.png)
 
-![TDD](doc_TDD/Test_Driven_Development/Slide4.png)
-![TDD](doc_TDD/Test_Driven_Development/Slide5.png)
-![TDD](doc_TDD/Test_Driven_Development/Slide6.png)
-![TDD](doc_TDD/Test_Driven_Development/Slide7.png)
-![TDD](doc_TDD/Test_Driven_Development/Slide8.png)
-![TDD](doc_TDD/Test_Driven_Development/Slide9.png)
-![TDD](doc_TDD/Test_Driven_Development/Slide10.png)
-![TDD](doc_TDD/Test_Driven_Development/Slide11.png)
-![TDD](doc_TDD/Test_Driven_Development/Slide12.png)
+![TDD](doc_TDD//Slide4.png)
+![TDD](doc_TDD//Slide5.png)
+![TDD](doc_TDD//Slide6.png)
+![TDD](doc_TDD//Slide7.png)
+![TDD](doc_TDD//Slide8.png)
+![TDD](doc_TDD//Slide9.png)
+![TDD](doc_TDD//Slide10.png)
+![TDD](doc_TDD//Slide11.png)
+![TDD](doc_TDD//Slide12.png)
