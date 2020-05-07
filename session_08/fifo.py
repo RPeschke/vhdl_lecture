@@ -4,7 +4,7 @@ import argg_hdl.examples as  ahe
 
 
 class axiFifo(v_clk_entity):
-    def __init__(self,clk=None,itype =v_slv(32),depth=10):
+    def __init__(self,clk=None,itype =v_slv(16),depth=10):
         super().__init__(clk)
         self.Axi_in = port_Stream_Slave(ahe.axisStream(itype))
         self.Axi_out = port_Stream_Master(ahe.axisStream(itype))

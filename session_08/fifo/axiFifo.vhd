@@ -8,16 +8,16 @@ use IEEE.std_logic_1164.all;
 use UNISIM.VComponents.all;
 use ieee.std_logic_unsigned.all;
 use work.argg_hdl_core.all;
-use work.axisStream_slv32.all;
-use work.slv32_a_pack.all;
+use work.axisStream_slv16.all;
+use work.slv16_a_pack.all;
 
 
 entity axiFifo is 
   port(
-    Axi_in_s2m :  out  axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-    Axi_in_m2s :  in  axiStream_slv32_m2s := axiStream_slv32_m2s_null;
-    Axi_out_s2m :  in  axiStream_slv32_s2m := axiStream_slv32_s2m_null;
-    Axi_out_m2s :  out  axiStream_slv32_m2s := axiStream_slv32_m2s_null;
+    Axi_in_s2m :  out  axiStream_slv16_s2m := axiStream_slv16_s2m_null;
+    Axi_in_m2s :  in  axiStream_slv16_m2s := axiStream_slv16_m2s_null;
+    Axi_out_s2m :  in  axiStream_slv16_s2m := axiStream_slv16_s2m_null;
+    Axi_out_m2s :  out  axiStream_slv16_m2s := axiStream_slv16_m2s_null;
     clk :  in  std_logic := '0'
   );
 end entity;
@@ -29,9 +29,9 @@ architecture rtl of axiFifo is
 --------------------------axiFifo-----------------
   constant array_size : integer := 1024; 
   constant depth : integer := 10; 
-  signal head_index : std_logic_vector(10 downto 0) := (others => '0'); 
-  signal sList : slv32_a(array_size - 1 downto 0)  := (others => (others => '0'));
+  signal sList : slv16_a(array_size - 1 downto 0)  := (others => (others => '0'));
   signal tail_index : std_logic_vector(10 downto 0) := (others => '0'); 
+  signal head_index : std_logic_vector(10 downto 0) := (others => '0'); 
 -------------------------- end axiFifo-----------------
 
 begin
@@ -41,9 +41,9 @@ begin
   
   -----------------------------------
   proc : process(clk) is
-    variable axiSalve : axiStream_slv32_slave := axiStream_slv32_slave_null;
+    variable axiSalve : axiStream_slv16_slave := axiStream_slv16_slave_null;
     variable counter : std_logic_vector(10 downto 0) := (others => '0');
-    variable axiSalve_buff : std_logic_vector(31 downto 0) := (others => '0');
+    variable axiSalve_buff : std_logic_vector(15 downto 0) := (others => '0');
     variable i_valid : std_logic := '0';
     begin
       if rising_edge(clk) then 
