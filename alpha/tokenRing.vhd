@@ -16,64 +16,98 @@ end entity;
 
 architecture rtl of tokenRing is
   
-  signal  asic_a_desi_chain_out  : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
-  signal  asic_b_desi_chain_out  : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
-  signal  asic_c_desi_chain_out  : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
-  signal  asic_d_desi_chain_out  : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
-  signal  handler_desi_chain_out  : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
+  signal ASIC_AA_tx_m2s :  tokenring_interface_m2s :=tokenring_interface_m2s_null;
+  signal ASIC_AA_tx_s2m :  tokenring_interface_s2m :=tokenring_interface_s2m_null;
       
+  signal ASIC_BB_tx_m2s :  tokenring_interface_m2s :=tokenring_interface_m2s_null;
+  signal ASIC_BB_tx_s2m :  tokenring_interface_s2m :=tokenring_interface_s2m_null;
+  
+  
+  signal ASIC_CC_tx_m2s :  tokenring_interface_m2s :=tokenring_interface_m2s_null;
+  signal ASIC_CC_tx_s2m :  tokenring_interface_s2m :=tokenring_interface_s2m_null;
+  
+  signal ASIC_DD_tx_m2s :  tokenring_interface_m2s :=tokenring_interface_m2s_null;
+  signal ASIC_DD_tx_s2m :  tokenring_interface_s2m :=tokenring_interface_s2m_null;
+  
+ -- signal FPGA_tx_m2s :  tokenring_interface_m2s :=tokenring_interface_m2s_null;
+  signal FPGA_tx_s2m :  tokenring_interface_s2m :=tokenring_interface_s2m_null;
 begin
   
-  ASIC_AA: entity work.TokenParser generic map(
+  ASIC_AA: entity work.TokenParser_ASIC generic map(
       ASIC_HEADER => ASIC_A
     ) port map (
       clk => clk,
       rst => rst,
 
       dummy_data => asic_a_dummy_data,
-      desi_chain_in  => handler_desi_chain_out,
-      desi_chain_out  => asic_a_desi_chain_out
+    
+      rx_s2m => FPGA_tx_s2m,
+      
+      tx_m2s => ASIC_AA_tx_m2s,
+      tx_s2m => ASIC_AA_tx_s2m
+
     );
   
-  ASIC_BB: entity work.TokenParser generic map(
+  ASIC_BB: entity work.TokenParser_ASIC generic map(
     ASIC_HEADER => ASIC_B
   ) port map (
     clk => clk,
     rst => rst,
 
     dummy_data => asic_b_dummy_data,
-    desi_chain_in  => asic_a_desi_chain_out,
-    desi_chain_out  => asic_b_desi_chain_out
+    rx_m2s => ASIC_AA_tx_m2s,
+    rx_s2m => ASIC_AA_tx_s2m,
+    
+    
+    tx_m2s => ASIC_BB_tx_m2s,
+    tx_s2m => ASIC_BB_tx_s2m
+    
+
+    
   );
   
-  ASIC_CC: entity work.TokenParser generic map(
+  ASIC_CC: entity work.TokenParser_ASIC generic map(
     ASIC_HEADER => ASIC_C
   ) port map (
     clk => clk,
     rst => rst,
 
     dummy_data => asic_c_dummy_data,
-    desi_chain_in  => asic_b_desi_chain_out,
-    desi_chain_out  => asic_c_desi_chain_out
+    rx_m2s => ASIC_BB_tx_m2s,
+    rx_s2m => ASIC_BB_tx_s2m,
+
+
+    tx_m2s => ASIC_CC_tx_m2s,
+    tx_s2m => ASIC_CC_tx_s2m
   );
   
-  ASIC_DD: entity work.TokenParser generic map(
+  ASIC_DD: entity work.TokenParser_ASIC generic map(
     ASIC_HEADER => ASIC_D
   ) port map (
     clk => clk,
     rst => rst,
 
     dummy_data => asic_d_dummy_data,
-    desi_chain_in  => asic_c_desi_chain_out,
-    desi_chain_out  => asic_d_desi_chain_out
+    rx_m2s => ASIC_CC_tx_m2s,
+    rx_s2m => ASIC_CC_tx_s2m,
+
+
+    tx_m2s => ASIC_DD_tx_m2s,
+    tx_s2m => ASIC_DD_tx_s2m
   );
 
-  handler : entity work.tokingRingHandler port map(
+  handler : entity work.tokingRingHandler_FPGA port map(
       clk => clk,
       rst => rst,
       dummy_data   => Data_out,    
-      desi_chain_in   => asic_d_desi_chain_out,
-      desi_chain_out  => handler_desi_chain_out
+
+      
+      rx_m2s => ASIC_DD_tx_m2s,
+      rx_s2m => ASIC_DD_tx_s2m,
+
+
+    
+      tx_s2m => FPGA_tx_s2m
     );
   
 end architecture;

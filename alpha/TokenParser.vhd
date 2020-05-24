@@ -11,7 +11,8 @@ library ieee;
 
   use ieee.std_logic_unsigned.all;
   use work.xgen_axistream_32.all;
-entity TokenParser is
+
+entity TokenParser_ASIC is
   generic(
     ASIC_HEADER : STD_LOGIC_VECTOR(31 downto 0) := ASIC_A
   );
@@ -20,20 +21,31 @@ entity TokenParser is
     rst: in  std_logic;
    
     dummy_data : in STD_LOGIC_VECTOR(31 downto 0):= (others => '0');
-    desi_chain_in  : in STD_LOGIC_VECTOR(31 downto 0):= (others => '0');
-    desi_chain_out   : out STD_LOGIC_VECTOR(31 downto 0):= (others => '0')
+    -- Master Interface 
+      tx_m2s : out tokenring_interface_m2s :=tokenring_interface_m2s_null;
+      tx_s2m : in  tokenring_interface_s2m :=tokenring_interface_s2m_null;
+    -- end master interface 
+    
+
+    -- SLave Interface 
+      rx_m2s :   in tokenring_interface_m2s :=tokenring_interface_m2s_null;
+      rx_s2m : out  tokenring_interface_s2m :=tokenring_interface_s2m_null
+    -- end Slave interface 
+
   );
 end entity;
 
-architecture rtl of TokenParser is
+architecture rtl of TokenParser_ASIC is
   
   type state_t is (
     idle,
-    processing
+    asic_header_state,
+    processing,
+    send_token_state
     
   );
   signal state: state_t := idle;
-  signal counter : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
+
   
   signal data_in_m2s : axisStream_32_m2s := axisStream_32_m2s_null;
   signal data_in_s2m : axisStream_32_s2m := axisStream_32_s2m_null;
@@ -60,36 +72,52 @@ begin
   process(clk) is 
     variable rx: axisStream_32_slave := axisStream_32_slave_null;
     variable buff : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
+    variable buff1 : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
+    variable tr_rx: tokenring_interface_slave := tokenring_interface_slave_null;
+    variable tr_tx: tokenring_interface_master := tokenring_interface_master_null;
   begin 
     if rising_edge(clk) then 
       pull(rx,data_out_m2s);
-
-      desi_chain_out <= (others => '0');
+      pull(tr_rx, rx_m2s);
+      pull(tr_tx, tx_s2m);
+      
+      
       case state is
         when idle => 
-          counter <= (others => '0');
-          desi_chain_out <= desi_chain_in;
-          if desi_chain_in = TOKEN_end  and isReceivingData(rx) then 
-             desi_chain_out <= ASIC_HEADER;
-            counter <= counter + 1;
-            state <= processing;
+        
+          
+          if isReadyToSend(tr_tx)  and isReceivingData(rx) then 
+            send_data(tr_tx,  TOKEN_header);
+         
+            state <= asic_header_state;
+          else
+            getData(tr_rx,   buff1);
+            send_data(tr_tx, buff1);
+            send_token(tr_rx, isReadyToSend(tr_tx));
           end if;
 
-         
+        when asic_header_state=> 
+          send_data(tr_tx,  ASIC_HEADER);
+          state <= processing;
+          
         when processing => 
           if isReceivingData(rx) then 
             read_data(rx, buff);
-            desi_chain_out <= buff;
+            send_data(tr_tx,  buff);
           else
+           -- state <= send_token_state;
+            send_data(tr_tx, TOKEN_end);
+            send_token(tr_rx);
             state <= idle;
-            desi_chain_out <= TOKEN_end;
+
           end if;
+        when send_token_state =>
 
           
-            
-          
-          
       end case;
+      
+      push(tr_tx, tx_m2s);
+      push(tr_rx, rx_s2m);
       push(rx, data_out_s2m);
     end if;
   end process;
